@@ -570,18 +570,10 @@ def _compile(
             compiler.
     """
 
-    # Force threaded mode for WMO builds, using the same number of cores that is
-    # on a Mac Pro for historical reasons.
-    # TODO(b/32571265): Generalize this based on platform and core count when an
-    # API to obtain this is available.
     is_wmo = _is_wmo(
         copts + swift_toolchain.command_line_copts,
         feature_configuration,
     )
-    if is_wmo:
-        # We intentionally don't use `+=` or `extend` here to ensure that a
-        # copy is made instead of extending the original.
-        copts = copts + ["-num-threads", "12"]
 
     compile_reqs = declare_compile_outputs(
         actions = actions,
