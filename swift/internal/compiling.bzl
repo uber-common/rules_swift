@@ -888,7 +888,7 @@ def _wmo_thread_count_configurator(should_check_flags, prerequisites, args):
         _is_wmo_manually_requested(prerequisites.user_compile_flags)
     ):
         # Force threaded mode for WMO builds.
-        args.add("-num-threads", str(_DEFAULT_WMO_THREAD_COUNT))
+        pass
 
 def _is_wmo_manually_requested(user_compile_flags):
     """Returns `True` if a WMO flag is in the given list of compiler flags.
