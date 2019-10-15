@@ -111,6 +111,10 @@ SWIFT_FEATURE_USE_GLOBAL_MODULE_CACHE = "swift.use_global_module_cache"
 # typically set this automatically if using a sufficiently recent version of Swift (4.2 or higher).
 SWIFT_FEATURE_USE_RESPONSE_FILES = "swift.use_response_files"
 
+# If enabled and whole module optimisation is being used, the `*.swiftdoc`, `*.swiftmodule` and `*-Swift.h`
+# are generated with a separate action rather than as part of the compilation.
+SWIFT_FEATURE_SPLIT_DERIVED_FILES_GENERATION = "swift.split_derived_files_generation"
+
 # If enabled, builds using the "dbg" compilation mode will explicitly disable swiftc from producing
 # swiftmodules containing embedded file paths, which are inherently non-portable across machines.
 #
