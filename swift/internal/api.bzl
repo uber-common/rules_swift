@@ -490,14 +490,17 @@ def _compile(
 
     swiftmodule = derived_files.swiftmodule(actions, module_name = module_name)
     swiftdoc = derived_files.swiftdoc(actions, module_name = module_name)
-    additional_outputs = []
+    additional_compile_outputs = []
+    additional_derived_outputs = []
 
     # Since all actions go through the worker (whether in persistent mode or not), the actual tool
     # we want to run (swiftc) should be the first "argument".
     tool_args = actions.args()
     tool_args.add(get_swift_tool(swift_toolchain = swift_toolchain, tool = "swiftc"))
 
-    args = actions.args()
+    common_args = actions.args()
+    compile_args = actions.args()
+    derived_args = actions.args()
     if _is_enabled(
         feature_configuration = feature_configuration,
         feature_name = SWIFT_FEATURE_USE_GLOBAL_MODULE_CACHE,
@@ -506,22 +509,22 @@ def _compile(
         # letting it decide where the cache should live. This is usually somewhere in the system
         # temporary directory.
         if bin_dir:
-            args.add("-module-cache-path", _global_module_cache_path(bin_dir))
+            common_args.add("-module-cache-path", _global_module_cache_path(bin_dir))
     else:
-        args.add("-Xwrapped-swift=-ephemeral-module-cache")
+        common_args.add("-Xwrapped-swift=-ephemeral-module-cache")
 
     if _is_enabled(
         feature_configuration = feature_configuration,
         feature_name = SWIFT_FEATURE_DEBUG_PREFIX_MAP,
     ):
-        args.add("-Xwrapped-swift=-debug-prefix-pwd-is-dot")
+        common_args.add("-Xwrapped-swift=-debug-prefix-pwd-is-dot")
 
     if _is_enabled(
         feature_configuration = feature_configuration,
         feature_name = SWIFT_FEATURE_USE_RESPONSE_FILES,
     ):
-        args.set_param_file_format("multiline")
-        args.use_param_file("@%s", use_always = True)
+        common_args.set_param_file_format("multiline")
+        common_args.use_param_file("@%s", use_always = True)
 
         # Only enable persistent workers if the toolchain supports response files, because the
         # worker unconditionally writes its arguments into one to prevent command line overflow.
@@ -535,21 +538,21 @@ def _compile(
         feature_name = SWIFT_FEATURE_COMPILE_STATS,
     ):
         stats_directory = derived_files.stats_directory(actions, target_name)
-        additional_outputs.append(stats_directory)
-        args.add("-stats-output-dir", stats_directory.path)
+        additional_compile_outputs.append(stats_directory)
+        compile_args.add("-stats-output-dir", stats_directory.path)
     else:
         stats_directory = None
 
-    args.add("-emit-object")
-    args.add_all(compile_reqs.args)
-    args.add("-emit-module-path")
-    args.add(swiftmodule)
+    compile_args.add("-emit-object")
+    compile_args.add_all(compile_reqs.args)
+    derived_args.add("-emit-module-path")
+    derived_args.add(swiftmodule)
 
     # Add any command line arguments that do *not* have to do with emitting outputs.
     basic_inputs = _swiftc_command_line_and_inputs(
         # TODO(allevato): Make this argument a list of files instead.
         additional_input_depsets = [depset(additional_inputs)],
-        args = args,
+        args = common_args,
         copts = copts,
         defines = defines,
         deps = deps,
@@ -568,9 +571,9 @@ def _compile(
     )
     if generates_header and swift_toolchain.supports_objc_interop:
         generated_header = derived_files.objc_header(actions = actions, target_name = target_name)
-        args.add("-emit-objc-header-path")
-        args.add(generated_header)
-        additional_outputs.append(generated_header)
+        derived_args.add("-emit-objc-header-path")
+        derived_args.add(generated_header)
+        additional_derived_outputs.append(generated_header)
 
         # Create a module map for the generated header file. This ensures that inclusions of it are
         # treated modularly, not textually.
@@ -606,12 +609,14 @@ def _compile(
             depset(compile_reqs.compile_inputs),
         ],
     )
-    compile_outputs = ([swiftmodule, swiftdoc] + output_objects +
-                       compile_reqs.other_outputs) + additional_outputs
+
+    derived_outputs = [swiftdoc, swiftmodule] + additional_derived_outputs
+    compile_outputs = output_objects + compile_reqs.other_outputs + additional_compile_outputs + derived_outputs
+    args = [tool_args, common_args, compile_args, derived_args]
 
     run_swift_action(
         actions = actions,
-        arguments = [tool_args, args],
+        arguments = args,
         execution_requirements = execution_requirements,
         inputs = all_inputs,
         mnemonic = "SwiftCompile",
