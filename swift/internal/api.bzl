@@ -66,6 +66,7 @@ load(
     "SWIFT_FEATURE_SUPPORTS_LIBRARY_EVOLUTION",
     "SWIFT_FEATURE_USE_GLOBAL_MODULE_CACHE",
     "SWIFT_FEATURE_USE_RESPONSE_FILES",
+    "SWIFT_FEATURE_SPLIT_DERIVED_FILES_GENERATION",
 )
 load(":providers.bzl", "SwiftInfo", "SwiftToolchainInfo")
 
@@ -743,8 +744,24 @@ def _compile(
     )
 
     derived_outputs = [swiftdoc, swiftmodule] + additional_derived_outputs
-    compile_outputs = output_objects + compile_reqs.other_outputs + additional_compile_outputs + derived_outputs
-    args = [common_args, compile_args, derived_args]
+    compile_outputs = output_objects + compile_reqs.other_outputs + additional_compile_outputs
+    args = [common_args, compile_args]
+    if (_is_enabled(feature_configuration = feature_configuration, feature_name = SWIFT_FEATURE_SPLIT_DERIVED_FILES_GENERATION)
+        and _is_wmo(copts + swift_toolchain.command_line_copts, feature_configuration)):
+        run_swift_action(
+            actions = actions,
+            arguments = [common_args, derived_args],
+            driver_mode = "swiftc",
+            execution_requirements = execution_requirements,
+            inputs = all_inputs,
+            mnemonic = "SwiftDerived",
+            outputs = derived_outputs,
+            progress_message = "Generating derived files for {}".format(module_name),
+            swift_toolchain = swift_toolchain,
+        )
+    else:
+        compile_outputs.extend(derived_outputs)
+        args.append(derived_args)
 
     run_swift_action(
         actions = actions,
