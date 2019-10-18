@@ -100,7 +100,14 @@ def _swift_library_impl(ctx):
         swift_toolchain = swift_toolchain,
     )
 
+
     output_groups = {}
+    if compilation_outputs.generated_header:
+        output_groups["generated_header"] = depset([compilation_outputs.generated_header])
+    if compilation_outputs.swiftdoc:
+        output_groups["swiftdoc"] = depset([compilation_outputs.swiftdoc])
+    if compilation_outputs.swiftmodule:
+        output_groups["swiftmodule"] = depset([compilation_outputs.swiftmodule])
     if compilation_outputs.indexstore:
         output_groups["swift_index_store"] = depset([compilation_outputs.indexstore])
     if compilation_outputs.stats_directory:
