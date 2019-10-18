@@ -436,6 +436,15 @@ def output_groups_from_compilation_outputs(compilation_outputs):
     """
     output_groups = {}
 
+    if compilation_outputs.generated_header:
+        output_groups["generated_header"] = depset([compilation_outputs.generated_header])
+
+    if compilation_outputs.swiftdoc:
+        output_groups["swiftdoc"] = depset([compilation_outputs.swiftdoc])
+
+    if compilation_outputs.swiftmodule:
+        output_groups["swiftmodule"] = depset([compilation_outputs.swiftmodule])
+
     if compilation_outputs.indexstore:
         output_groups["swift_index_store"] = depset([
             compilation_outputs.indexstore,
