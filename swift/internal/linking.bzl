@@ -58,7 +58,11 @@ def _register_static_library_link_action(
     )
     args = actions.args()
     args.add_all(command_line)
-    args.add_all(objects)
+    args.add("-filelist")
+    objects_args = actions.args()
+    objects_args.set_param_file_format("multiline")
+    objects_args.use_param_file("%s", use_always=True)
+    objects_args.add_all(objects)
 
     env = cc_common.get_environment_variables(
         action_name = CPP_LINK_STATIC_LIBRARY_ACTION_NAME,
@@ -68,7 +72,7 @@ def _register_static_library_link_action(
 
     actions.run(
         executable = archiver_path,
-        arguments = [args],
+        arguments = [args, objects_args],
         env = env,
         # TODO(allevato): It seems like the `cc_common` APIs should have a way to get this value
         # so that it can be handled consistently for the toolchain in use.
