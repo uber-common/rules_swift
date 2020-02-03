@@ -745,7 +745,7 @@ def _compile(
 
     derived_outputs = [swiftdoc, swiftmodule] + additional_derived_outputs
     compile_outputs = output_objects + compile_reqs.other_outputs + additional_compile_outputs
-    args = [common_args, compile_args]
+    args = [compile_args, common_args]
     if (_is_enabled(feature_configuration = feature_configuration, feature_name = SWIFT_FEATURE_SPLIT_DERIVED_FILES_GENERATION)
         and _is_wmo(copts + swift_toolchain.command_line_copts, feature_configuration)):
         run_swift_action(
