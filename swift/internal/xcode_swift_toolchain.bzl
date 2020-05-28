@@ -284,7 +284,10 @@ def _all_action_configs(
     action_configs = [
         # Basic compilation flags (target triple and toolchain search paths).
         swift_toolchain_config.action_config(
-            actions = [swift_action_names.COMPILE],
+            actions = [
+                swift_action_names.COMPILE,
+                swift_action_names.DERIVED_FILES,
+            ],
             configurators = [
                 swift_toolchain_config.add_arg("-target", target_triple),
                 swift_toolchain_config.add_arg("-sdk", sdk_dir),
@@ -320,7 +323,10 @@ def _all_action_configs(
         # directory so that modules are found correctly.
         action_configs.append(
             swift_toolchain_config.action_config(
-                actions = [swift_action_names.COMPILE],
+                actions = [
+                    swift_action_names.COMPILE,
+                    swift_action_names.DERIVED_FILES,
+                ],
                 configurators = [
                     partial.make(
                         _resource_directory_configurator,
@@ -364,16 +370,19 @@ def _all_tool_configs(
         env = dict(env)
         env["TOOLCHAINS"] = custom_toolchain
 
+    tool_config = swift_toolchain_config.driver_tool_config(
+        driver_mode = "swiftc",
+        env = env,
+        execution_requirements = execution_requirements,
+        swift_executable = swift_executable,
+        toolchain_root = toolchain_root,
+        use_param_file = use_param_file,
+        worker_mode = "persistent",
+    )
+
     return {
-        swift_action_names.COMPILE: swift_toolchain_config.driver_tool_config(
-            driver_mode = "swiftc",
-            env = env,
-            execution_requirements = execution_requirements,
-            swift_executable = swift_executable,
-            toolchain_root = toolchain_root,
-            use_param_file = use_param_file,
-            worker_mode = "persistent",
-        ),
+        swift_action_names.COMPILE: tool_config,
+        swift_action_names.DERIVED_FILES: tool_config,
     }
 
 def _is_macos(platform):
