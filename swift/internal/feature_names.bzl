@@ -183,3 +183,8 @@ SWIFT_FEATURE_EMIT_SWIFTINTERFACE = "swift.emit_swiftinterface"
 # This allows Bazel to avoid propagating swiftmodules of such dependencies
 # higher in the dependency graph than they need to be.
 SWIFT_FEATURE_SUPPORTS_PRIVATE_DEPS = "swift.supports_private_deps"
+
+# If enabled and whole module optimisation is being used, the `*.swiftdoc`,
+# `*.swiftmodule` and `*-Swift.h` are generated with a separate action
+# rather than as part of the compilation.
+SWIFT_FEATURE_SPLIT_DERIVED_FILES_GENERATION = "swift.split_derived_files_generation"
