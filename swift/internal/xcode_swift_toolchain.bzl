@@ -546,7 +546,10 @@ def _xcode_swift_toolchain_impl(ctx):
         ctx.fragments.objc,
     ) + ctx.fragments.swift.copts()
 
-    env = _xcode_env(platform = platform, xcode_config = xcode_config)
+    env = dicts.add(
+        _xcode_env(platform = platform, xcode_config = xcode_config),
+        ctx.configuration.default_shell_env,
+    )
     execution_requirements = _xcode_execution_requirements(
         xcode_config = xcode_config,
     )
