@@ -86,23 +86,6 @@ def _command_line_objc_copts(compilation_mode, objc_fragment):
     # the exact set of flags that Bazel was originally passing if the list we
     # get back from the configuration fragment is empty.
     legacy_copts = objc_fragment.copts_for_current_compilation_mode
-    if not legacy_copts:
-        if compilation_mode == "dbg":
-            legacy_copts = [
-                "-O0",
-                "-DDEBUG=1",
-                "-fstack-protector",
-                "-fstack-protector-all",
-            ]
-        elif compilation_mode == "opt":
-            legacy_copts = [
-                "-Os",
-                "-DNDEBUG=1",
-                "-Wno-unused-variable",
-                "-Winit-self",
-                "-Wno-extra",
-            ]
-
     clang_copts = objc_fragment.copts + legacy_copts
 
     return collections.before_each(
