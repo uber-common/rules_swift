@@ -188,3 +188,7 @@ SWIFT_FEATURE_SUPPORTS_PRIVATE_DEPS = "swift.supports_private_deps"
 # `*.swiftmodule` and `*-Swift.h` are generated with a separate action
 # rather than as part of the compilation.
 SWIFT_FEATURE_SPLIT_DERIVED_FILES_GENERATION = "swift.split_derived_files_generation"
+
+# If enabled, Swift compilation will produce LLVM bitcode instead of object file
+# the output will share the same name as the object file (file.o)
+SWIFT_FEATURE_EMIT_BC = "swift.emit_bc"
