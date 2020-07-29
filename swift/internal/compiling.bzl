@@ -93,7 +93,7 @@ def compile_action_configs():
     action_configs = [
         # Emit object file(s).
         swift_toolchain_config.action_config(
-            actions=[swift_action_names.COMPILE],
+            actions = [swift_action_names.COMPILE],
             not_features = [SWIFT_FEATURE_EMIT_BC],
             configurators = [
                 swift_toolchain_config.add_arg("-emit-object"),
@@ -102,7 +102,7 @@ def compile_action_configs():
 
         # Emit bitcode file
         swift_toolchain_config.action_config(
-            actions=[swift_action_names.COMPILE],
+            actions = [swift_action_names.COMPILE],
             features = [SWIFT_FEATURE_EMIT_BC],
             configurators = [
                 swift_toolchain_config.add_arg("-emit-bc"),
