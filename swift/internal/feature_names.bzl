@@ -234,3 +234,7 @@ SWIFT_FEATURE_ENABLE_SKIP_FUNCTION_BODIES = "swift.skip_function_bodies_for_deri
 # If enabled remap the absolute path to Xcode in debug info. When used with
 # swift.coverage_prefix_map also remap the path in coverage data.
 SWIFT_FEATURE_REMAP_XCODE_PATH = "swift.remap_xcode_path"
+
+# If enabled, Swift compilation will produce LLVM bitcode instead of object file
+# the output will share the same name as the object file (file.o)
+SWIFT_FEATURE_EMIT_BC = "swift.emit_bc"
