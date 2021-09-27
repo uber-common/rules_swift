@@ -60,6 +60,7 @@ load(
     "SWIFT_FEATURE_VFSOVERLAY",
     "SWIFT_FEATURE__NUM_THREADS_0_IN_SWIFTCOPTS",
     "SWIFT_FEATURE__WMO_IN_SWIFTCOPTS",
+    "SWIFT_FEATURE_EMIT_BC",
 )
 load(":features.bzl", "are_all_features_enabled", "is_feature_enabled")
 load(":module_maps.bzl", "write_module_map")
@@ -123,8 +124,18 @@ def compile_action_configs(
         # Emit object file(s).
         swift_toolchain_config.action_config(
             actions = [swift_action_names.COMPILE],
+            not_features = [SWIFT_FEATURE_EMIT_BC],
             configurators = [
                 swift_toolchain_config.add_arg("-emit-object"),
+            ],
+        ),
+
+        # Emit bitcode file
+        swift_toolchain_config.action_config(
+            actions = [swift_action_names.COMPILE],
+            features = [SWIFT_FEATURE_EMIT_BC],
+            configurators = [
+                swift_toolchain_config.add_arg("-emit-bc"),
             ],
         ),
 
@@ -2001,10 +2012,16 @@ def _declare_compile_outputs(
         user_compile_flags = user_compile_flags,
     )
 
-    if not output_nature.emits_multiple_objects:
+    emit_bc = is_feature_enabled(
+        feature_configuration = feature_configuration,
+        feature_name = SWIFT_FEATURE_EMIT_BC,
+    )
+
+    if not output_nature.emits_multiple_objects or emit_bc:
         # If we're emitting a single object, we don't use an object map; we just
         # declare the output file that the compiler will generate and there are
         # no other partial outputs.
+        # If emit_bc is on, only one bitcode file is emitted
         object_files = [derived_files.whole_module_object_file(
             actions = actions,
             target_name = target_name,

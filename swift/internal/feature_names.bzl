@@ -231,3 +231,7 @@ SWIFT_FEATURE__WMO_IN_SWIFTCOPTS = "swift._wmo_in_swiftcopts"
 # were passed on the command line using `--swiftcopt`. Users should never
 # manually enable, disable, or query this feature.
 SWIFT_FEATURE__NUM_THREADS_0_IN_SWIFTCOPTS = "swift._num_threads_0_in_swiftcopts"
+
+# If enabled, Swift compilation will produce LLVM bitcode instead of object file
+# the output will share the same name as the object file (file.o)
+SWIFT_FEATURE_EMIT_BC = "swift.emit_bc"
