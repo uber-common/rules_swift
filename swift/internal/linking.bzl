@@ -60,13 +60,10 @@ def _register_static_library_link_action(
     args.add_all(command_line)
 
     filelist_args = actions.args()
-    if swift_toolchain.linker_supports_filelist:
-        args.add("-filelist")
-        filelist_args.set_param_file_format("multiline")
-        filelist_args.use_param_file("%s", use_always = True)
-        filelist_args.add_all(objects)
-    else:
-        args.add_all(objects)
+    args.add("-filelist")
+    filelist_args.set_param_file_format("multiline")
+    filelist_args.use_param_file("%s", use_always = True)
+    filelist_args.add_all(objects)
 
     env = cc_common.get_environment_variables(
         action_name = CPP_LINK_STATIC_LIBRARY_ACTION_NAME,
