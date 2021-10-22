@@ -83,7 +83,7 @@ _SWIFTMODULES_VFS_ROOT = "/__build_bazel_rules_swift/swiftmodules"
 # that is on a Mac Pro for historical reasons.
 # TODO(b/32571265): Generalize this based on platform and core count
 # when an API to obtain this is available.
-_DEFAULT_WMO_THREAD_COUNT = 1
+_DEFAULT_WMO_THREAD_COUNT = 0
 
 # Swift command line flags that enable whole module optimization. (This
 # dictionary is used as a set for quick lookup; the values are irrelevant.)
@@ -2608,7 +2608,7 @@ def _emitted_output_nature(feature_configuration, user_compile_flags):
     is_single_threaded = is_feature_enabled(
         feature_configuration = feature_configuration,
         feature_name = SWIFT_FEATURE__NUM_THREADS_0_IN_SWIFTCOPTS,
-    ) or _find_num_threads_flag_value(user_compile_flags) == 0
+    ) or (_find_num_threads_flag_value(user_compile_flags) or _DEFAULT_WMO_THREAD_COUNT) == 0
 
     return struct(
         emits_multiple_objects = not (is_wmo and is_single_threaded),
