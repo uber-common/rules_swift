@@ -2648,22 +2648,6 @@ def output_groups_from_other_compilation_outputs(*, other_compilation_outputs):
         `OutputGroupInfo` constructor.
     """
     output_groups = {}
-    
-    if compilation_outputs.generated_header:
-         output_groups["generated_header"] = depset([
-             compilation_outputs.generated_header,
-         ])
-
-     if compilation_outputs.swiftdoc:
-         output_groups["swiftdoc"] = depset([
-             compilation_outputs.swiftdoc,
-         ])
-
-     if compilation_outputs.swiftmodule:
-         output_groups["swiftmodule"] = depset([
-             compilation_outputs.swiftmodule,
-         ])
-
     if other_compilation_outputs.ast_files:
         output_groups["swift_ast_file"] = depset(
             other_compilation_outputs.ast_files,
