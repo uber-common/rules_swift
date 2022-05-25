@@ -278,7 +278,7 @@ The C++ toolchain from which other tools needed by the Swift toolchain (such as
 """,
             ),
             "_worker": attr.label(
-                cfg = "host",
+                cfg = "exec",
                 allow_files = True,
                 default = Label("//tools/worker"),
                 doc = """\

@@ -800,7 +800,7 @@ of a Swift module.
             ),
             "generated_header_rewriter": attr.label(
                 allow_files = True,
-                cfg = "host",
+                cfg = "exec",
                 doc = """\
 If present, an executable that will be invoked after compilation to rewrite the
 generated header.
@@ -831,10 +831,10 @@ toolchain (such as `clang`) will be retrieved.
 """,
             ),
             "_worker": attr.label(
-                cfg = "host",
+                cfg = "exec",
                 allow_files = True,
                 default = Label(
-                    "@build_bazel_rules_swift//tools/worker",
+                    "@build_bazel_rules_swift//tools/worker:worker_wrapper",
                 ),
                 doc = """\
 An executable that wraps Swift compiler invocations and also provides support
