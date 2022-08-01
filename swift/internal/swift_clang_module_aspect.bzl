@@ -299,6 +299,8 @@ def _objc_library_module_info(aspect_ctx):
     # `swift_interop_hint` to customize `objc_*` targets' module names and
     # module maps.
     module_name = getattr(attr, "module_name", None)
+    if module_name == "":
+        module_name = getattr(attr, "name", None)
     module_map_file = None
 
     module_map_target = getattr(attr, "module_map", None)
@@ -306,7 +308,6 @@ def _objc_library_module_info(aspect_ctx):
         module_map_files = module_map_target.files.to_list()
         if module_map_files:
             module_map_file = module_map_files[0]
-
     return module_name, module_map_file
 
 # TODO(b/151667396): Remove j2objc-specific knowledge.
@@ -428,6 +429,7 @@ def _module_info_for_target(
 
     # If we didn't get a module map above, generate it now.
     if not module_map_file:
+        return None, None
         module_map_file = _generate_module_map(
             actions = aspect_ctx.actions,
             compilation_context = compilation_context,

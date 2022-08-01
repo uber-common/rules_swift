@@ -2483,7 +2483,7 @@ def _declare_compile_outputs(
         feature_name = SWIFT_FEATURE_BITCODE_EMBEDDED,
     )
 
-    if not output_nature.emits_multiple_objects:
+    if not output_nature.emits_multiple_objects or emits_bc:
         # If we're emitting a single object, we don't use an object map; we just
         # declare the output file that the compiler will generate and there are
         # no other partial outputs.
