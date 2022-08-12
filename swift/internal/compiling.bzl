@@ -1903,7 +1903,6 @@ def compile(
         all_compile_outputs = compact([
             compile_outputs.swiftinterface_file,
             compile_outputs.indexstore_directory,
-            compile_outputs.symbol_graph_directory,
         ]) + compile_outputs.object_files
         all_derived_outputs = compact([
             # The `.swiftmodule` file is explicitly listed as the first output
@@ -1914,6 +1913,7 @@ def compile(
             compile_outputs.swiftdoc_file,
             compile_outputs.swiftsourceinfo_file,
             compile_outputs.generated_header_file,
+            compile_outputs.symbol_graph_directory,
         ]) + other_outputs
     else:
         all_compile_outputs = compact([
