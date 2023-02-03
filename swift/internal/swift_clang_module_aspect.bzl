@@ -423,20 +423,23 @@ def _module_info_for_target(
         # If it was an `objc_library` without an explicit module name, or it
         # was some other `Objc`-providing target, derive the module name
         # now.
-        if not module_name:
+        if not module_name and (aspect_ctx.rule.kind != "headermap" or aspect_ctx.rule.kind != "modulemap"):
             module_name = derive_module_name(target.label)
 
     # If we didn't get a module map above, generate it now.
     if not module_map_file:
-        module_map_file = _generate_module_map(
-            actions = aspect_ctx.actions,
-            compilation_context = compilation_context,
-            dependent_module_names = dependent_module_names,
-            feature_configuration = feature_configuration,
-            module_name = module_name,
-            target = target,
-            umbrella_header = umbrella_header,
-        )
+        if aspect_ctx.rule.kind == "headermap" or aspect_ctx.rule.kind == "modulemap":
+            return None, None
+        else:
+            module_map_file = _generate_module_map(
+                actions = aspect_ctx.actions,
+                compilation_context = compilation_context,
+                dependent_module_names = dependent_module_names,
+                feature_configuration = feature_configuration,
+                module_name = module_name,
+                target = target,
+                umbrella_header = umbrella_header,
+            )
     return module_name, module_map_file
 
 def _handle_module(
