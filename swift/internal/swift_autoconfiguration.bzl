@@ -277,11 +277,13 @@ toolchain.
 toolchain.
 """,
         )
-        return
 
     root = path_to_swiftc.dirname.dirname
-    feature_values = _compute_feature_values(repository_ctx, path_to_swiftc)
-    version_file = _write_swift_version(repository_ctx, path_to_swiftc)
+    feature_values = []
+    version_file = "@//configs:.xcodeversion"
+    if path_to_swiftc:
+        feature_values = _compute_feature_values(repository_ctx, path_to_swiftc)
+        version_file = _write_swift_version(repository_ctx, path_to_swiftc)
 
     # TODO: This should be removed so that private headers can be used with
     # explicit modules, but the build targets for CgRPC need to be cleaned up
