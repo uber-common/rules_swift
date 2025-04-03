@@ -277,11 +277,17 @@ toolchain.
 toolchain.
 """,
         )
-        return
 
-    root = path_to_swiftc.dirname.dirname
-    feature_values = _compute_feature_values(repository_ctx, path_to_swiftc)
-    version_file = _write_swift_version(repository_ctx, path_to_swiftc)
+    root = "/usr/bin"
+    feature_values = []
+    version_file = "@//configs:.xcodeversion"
+    if path_to_swiftc:
+        feature_values = _compute_feature_values(repository_ctx, path_to_swiftc)
+        version_file = _write_swift_version(repository_ctx, path_to_swiftc)
+        root = path_to_swiftc.dirname.dirname
+        swift_features_config = _fetch_supported_features(repository_ctx, path_to_swiftc)
+        if "load-plugin-executable" in swift_features_config:
+            feature_values.append(SWIFT_FEATURE__SUPPORTS_MACROS)
 
     # TODO: This should be removed so that private headers can be used with
     # explicit modules, but the build targets for CgRPC need to be cleaned up
@@ -289,10 +295,6 @@ toolchain.
     feature_values.append(SWIFT_FEATURE_MODULE_MAP_NO_PRIVATE_HEADERS)
     feature_values.append(SWIFT_FEATURE_USE_AUTOLINK_EXTRACT)
     feature_values.append(SWIFT_FEATURE_USE_MODULE_WRAP)
-
-    swift_features_config = _fetch_supported_features(repository_ctx, path_to_swiftc)
-    if "load-plugin-executable" in swift_features_config:
-        feature_values.append(SWIFT_FEATURE__SUPPORTS_MACROS)
 
     repository_ctx.file(
         "BUILD",
